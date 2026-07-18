@@ -8,10 +8,14 @@ import Link from "next/link";
 export default async function BookingPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const session = await auth();
-  const [lap] = await db.select().from(lapangan).where(eq(lapangan.id, params.id));
+  
+  // Fetch semua lapangan yang aktif untuk menu pill buttons
+  const allLapangans = await db.select().from(lapangan).where(eq(lapangan.status, "aktif"));
+  
+  const lap = allLapangans.find(l => l.id === params.id);
 
   if (!lap) {
-    return <div className="p-8 text-center text-red-500 font-bold">Lapangan tidak ditemukan.</div>;
+    return <div className="p-8 text-center text-red-500 font-bold min-h-screen bg-[#0B1120]">Lapangan tidak ditemukan.</div>;
   }
 
   // Ambil reservasi yang aktif
@@ -36,41 +40,20 @@ export default async function BookingPage(props: { params: Promise<{ id: string 
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-[#0A2540] text-white px-8 py-5 flex justify-between items-center shadow-lg">
-        <Link href="/" className="font-extrabold text-xl hover:text-gray-300 transition-colors">
-          &larr; Kembali
-        </Link>
-      </header>
+    <div className="min-h-screen bg-[#0B1120] text-gray-100 pb-20">
+      <div className="text-center py-12">
+        <h1 className="text-4xl font-bold text-white mb-3">Reservasi Lapangan</h1>
+        <p className="text-gray-400">Pilih lapangan, tentukan jadwal, dan lakukan pembayaran</p>
+      </div>
 
-      <div className="max-w-5xl mx-auto px-6 mt-10">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-          <div className="h-64 bg-gray-200 w-full relative">
-            {lap.fotoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={lap.fotoUrl} alt={lap.nama} className="w-full h-full object-cover" />
-            ) : (
-               <div className="w-full h-full flex items-center justify-center text-gray-400">Tidak ada foto</div>
-            )}
-          </div>
-          <div className="p-8">
-            <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-3xl font-extrabold text-gray-900">{lap.nama}</h1>
-              <span className="bg-[#E6F0FF] text-[#0066FF] text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
-                {lap.jenis}
-              </span>
-            </div>
-            <p className="text-[#0A2540] font-black text-2xl">
-              Rp {Number(lap.hargaPerJam).toLocaleString("id-ID")}<span className="text-base text-gray-500 font-medium"> / jam</span>
-            </p>
-          </div>
-        </div>
-
+      <div className="max-w-5xl mx-auto px-6">
         <JadwalLapangan 
           lapangan={lap} 
+          allLapangans={allLapangans}
           listReservasi={listReservasi} 
           listLock={listLock} 
           userId={session?.user?.id}
+          userRole={(session?.user as any)?.role}
         />
       </div>
     </div>

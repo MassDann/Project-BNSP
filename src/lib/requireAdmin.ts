@@ -1,4 +1,5 @@
 import { auth } from "./auth";
+import { redirect } from "next/navigation";
 
 export async function requireAdmin() {
   const session = await auth();
@@ -6,7 +7,7 @@ export async function requireAdmin() {
   const isAdmin = role === "admin" || role === "superadmin";
   
   if (!isAdmin) {
-    throw new Error("Forbidden");
+    redirect("/"); // Arahkan ke beranda jika bukan admin
   }
   return session?.user;
 }
@@ -14,7 +15,7 @@ export async function requireAdmin() {
 export async function requireAuth() {
   const session = await auth();
   if (!session?.user) {
-    throw new Error("Unauthorized");
+    redirect("/login"); // Arahkan ke halaman login jika belum autentikasi
   }
   return session.user;
 }

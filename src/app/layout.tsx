@@ -5,6 +5,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
 export const metadata: Metadata = {
   title: "SM Sport Center",
   description: "Sistem Reservasi Lapangan Olahraga",
@@ -17,8 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} ${manrope.variable} font-sans antialiased text-gray-900 bg-gray-50`}>
-        {children}
+      <body className={`${inter.variable} ${manrope.variable} font-sans antialiased text-gray-100 bg-[#0B1120] min-h-screen flex flex-col`}>
+        <Navbar />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

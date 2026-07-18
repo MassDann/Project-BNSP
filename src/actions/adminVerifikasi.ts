@@ -19,9 +19,13 @@ export async function verifikasiPembayaranAction(transaksiId: string, status: "d
 
   const statusReservasi = status === "disetujui" ? "terkonfirmasi" : "dibatalkan";
   
-  await db.update(reservasi)
+  const [res] = await db.update(reservasi)
     .set({ status: statusReservasi })
-    .where(eq(reservasi.id, reservasiId));
+    .where(eq(reservasi.id, reservasiId))
+    .returning({ lapanganId: reservasi.lapanganId });
 
   revalidatePath("/admin/verifikasi");
+  if (res?.lapanganId) {
+    revalidatePath(`/reservasi/${res.lapanganId}`);
+  }
 }

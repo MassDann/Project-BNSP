@@ -24,35 +24,41 @@ export default async function ProfilPage() {
   const countDibatalkan = data.filter(d => d.r.status === "dibatalkan" || d.r.status === "kedaluwarsa").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-[#0A2540] text-white px-8 py-5 flex justify-between items-center shadow-lg">
-        <h1 className="text-xl font-bold">Profil & Riwayat</h1>
-        <Link href="/" className="bg-[#0066FF] hover:bg-blue-600 px-4 py-2 rounded font-medium transition">
-          Beranda
+    <div className="min-h-screen bg-[#0B1120] font-sans">
+      <header className="bg-[#111827] border-b border-[#1F2937] text-white px-8 py-5 flex justify-between items-center sticky top-0 z-10 shadow-lg">
+        <h1 className="text-xl font-bold tracking-wide">Profil & Riwayat</h1>
+        <Link href="/" className="bg-[#2563EB] hover:bg-[#1D4ED8] px-4 py-2 rounded-lg font-bold transition-all shadow-md shadow-blue-500/20 text-sm">
+          Kembali ke Beranda
         </Link>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6 mt-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-8 flex gap-8">
+      <main className="max-w-5xl mx-auto p-6 mt-6">
+        <div className="bg-[#111827] rounded-2xl p-8 shadow-xl border border-[#1F2937] mb-10 flex gap-10">
           <div>
-            <h2 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Booking</h2>
-            <p className="text-4xl font-extrabold text-[#0A2540] mt-1">{countTotal}</p>
+            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Booking</h2>
+            <p className="text-4xl font-black text-white">{countTotal}</p>
           </div>
           <div>
-            <h2 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Berhasil</h2>
-            <p className="text-4xl font-extrabold text-green-600 mt-1">{countTerkonfirmasi}</p>
+            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Berhasil</h2>
+            <p className="text-4xl font-black text-green-500">{countTerkonfirmasi}</p>
           </div>
           <div>
-            <h2 className="text-gray-500 text-sm font-bold uppercase tracking-wider">Batal/Hangus</h2>
-            <p className="text-4xl font-extrabold text-red-600 mt-1">{countDibatalkan}</p>
+            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Batal/Hangus</h2>
+            <p className="text-4xl font-black text-red-500">{countDibatalkan}</p>
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Daftar Reservasi Anda</h2>
+        <h2 className="text-2xl font-bold text-white mb-6">Daftar Reservasi Anda</h2>
 
         <div className="grid gap-6">
           {data.length === 0 ? (
-            <p className="text-gray-500 bg-white p-6 rounded border">Anda belum pernah melakukan reservasi.</p>
+            <div className="bg-[#111827] p-10 rounded-2xl border border-[#1F2937] text-center">
+              <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <p className="text-gray-400 font-medium">Anda belum pernah melakukan reservasi.</p>
+              <Link href="/reservasi" className="mt-4 inline-block text-[#3B82F6] hover:text-blue-400 font-bold hover:underline transition-colors">
+                Mulai Booking Sekarang &rarr;
+              </Link>
+            </div>
           ) : data.map((d) => (
             <ProfilClient key={d.r.id} data={d} userNama={user.name!} />
           ))}

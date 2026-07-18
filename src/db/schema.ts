@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, numeric, integer, date, time } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, numeric, integer, date, time, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const pelanggan = pgTable('pelanggan', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -23,6 +23,7 @@ export const lapangan = pgTable('lapangan', {
   jenis: text('jenis').notNull(), // 'futsal' atau 'badminton'
   hargaPerJam: numeric('harga_per_jam').notNull(),
   fotoUrl: text('foto_url'),
+  deskripsi: text('deskripsi'),
   status: text('status').notNull().default('aktif'), // 'aktif' atau 'nonaktif'
 });
 
@@ -61,4 +62,6 @@ export const slotLock = pgTable('slot_lock', {
   pelangganId: uuid('pelanggan_id').references(() => pelanggan.id).notNull(),
   dibuatPada: timestamp('dibuat_pada', { withTimezone: true }).defaultNow().notNull(),
   kedaluwarsaPada: timestamp('kedaluwarsa_pada', { withTimezone: true }).notNull(),
-});
+}, (t) => ({
+  unq: uniqueIndex('slot_lock_unq').on(t.lapanganId, t.tanggal, t.jamMulai)
+}));
