@@ -6,29 +6,18 @@ import { requireAuth } from "@/lib/requireAdmin";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function uploadBuktiAction(formData: FormData) {
+export async function konfirmasiPembayaranAction(transaksiId: string, reservasiId: string) {
   try {
     const user = await requireAuth();
     if (!user || !user.id) throw new Error("Unauthorized");
     
-    const transaksiId = formData.get("transaksiId") as string;
-    const reservasiId = formData.get("reservasiId") as string;
-    const foto = formData.get("foto") as File;
-
-    if (!transaksiId || !reservasiId || !foto || foto.size === 0) {
-      return { error: "Data tidak lengkap atau file kosong" };
+    if (!transaksiId || !reservasiId) {
+      return { error: "Data tidak lengkap" };
     }
-
-    // Convert foto ke Base64 supaya bisa langsung disimpen di database (tanpa butuh Vercel Blob atau Netlify Blob)
-    const arrayBuffer = await foto.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString('base64');
-    const buktiUrl = `data:${foto.type};base64,${base64}`;
 
     // Update transaksi & reservasi
     await db.update(transaksi)
       .set({ 
-        buktiTransferUrl: buktiUrl,
         statusVerifikasi: 'menunggu' 
       }).where(eq(transaksi.id, transaksiId));
 
@@ -41,7 +30,7 @@ export async function uploadBuktiAction(formData: FormData) {
     
     return { success: true };
   } catch (error) {
-    return { error: "Gagal upload file." };
+    return { error: "Gagal mengonfirmasi." };
   }
 }
 

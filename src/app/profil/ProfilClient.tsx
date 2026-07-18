@@ -1,13 +1,37 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { uploadBuktiAction, batalkanReservasiAction } from "@/actions/transaksi";
+import { batalkanReservasiAction } from "@/actions/transaksi";
+import { QRCodeCanvas } from "qrcode.react";
+import { getPusherClient } from "@/lib/pusher-client";
+import { useRouter } from "next/navigation";
 import { jsPDF } from "jspdf";
 
 export default function ProfilClient({ data, userNama }: { data: any, userNama: string }) {
   const [isUploading, setIsUploading] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
   const [toastMsg, setToastMsg] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!data.t) return;
+    const channelName = `transaksi-${data.t.id}`;
+    const pusherClient = getPusherClient();
+    const channel = pusherClient.subscribe(channelName);
+    
+    channel.bind("payment-success", () => {
+      showToast("Pembayaran Berhasil Dikonfirmasi!");
+      setTimeout(() => {
+        router.refresh();
+      }, 1500);
+    });
+
+    return () => {
+      pusherClient.unsubscribe(channelName);
+    };
+  }, [data.t, router]);
+
+  const payUrl = typeof window !== "undefined" && data.t ? `${window.location.origin}/pay/${data.t.id}` : "";
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -72,21 +96,8 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
     doc.save(`Invoice_${data.l.nama}_${data.r.tanggal}.pdf`);
   };
 
-  const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsUploading(true);
-    const formData = new FormData(e.currentTarget);
-    formData.append("transaksiId", data.t.id);
-    formData.append("reservasiId", data.r.id);
-    
-    const res = await uploadBuktiAction(formData);
-    if (res?.error) {
-      showToast(res.error);
-    } else {
-      showToast("Bukti berhasil diupload!");
-    }
-    
-    setIsUploading(false);
+  const handleKonfirmasi = async () => {
+    // Tidak dipakai lagi di flow simulasi baru
   };
 
   return (
@@ -110,38 +121,40 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
         
         {data.r.status === "pending_bayar" && data.t && (
           <div className="mt-5 p-5 bg-[#1F2937] border border-yellow-600/30 rounded-xl flex flex-col md:flex-row gap-6 items-center md:items-start">
-            {/* Dummy QR Code */}
             <div className="flex-shrink-0 bg-white p-3 rounded-2xl shadow-lg border-4 border-gray-100 flex flex-col items-center">
               <div className="mb-2">
                 <span className="text-xs font-black text-gray-800 tracking-wider">QRIS DINAMIS</span>
               </div>
-              <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ID-PESANAN-${data.r.id}-TOTAL-Rp${data.t.jumlahBayar}`} 
-                alt="QRIS Dinamis" 
-                className="w-[120px] h-[120px] object-contain"
-              />
+              
+              <div className="bg-white p-2 rounded-lg inline-block">
+                {payUrl && <QRCodeCanvas value={payUrl} size={130} level="H" />}
+              </div>
+              
               <p className="text-center text-[10px] font-bold text-gray-500 mt-2 uppercase">SM Sport Center</p>
               <p className="text-center text-[8px] text-gray-400 mt-1 break-all px-2 max-w-[140px]">ID: {data.r.id}</p>
             </div>
 
             <div className="flex-1 w-full text-center md:text-left">
-              <p className="font-bold text-yellow-500 mb-2">Scan QRIS atau Transfer Rekening</p>
-              <p className="text-sm text-gray-400 mb-1">BCA: <strong className="text-gray-200">1234567890</strong> a/n SM Sport Center</p>
-              <p className="text-sm text-gray-400">Pastikan nominal bayar pas. Sisa Waktu: <strong className="text-red-500 text-base ml-1">{timeLeft}</strong></p>
+              <p className="font-bold text-yellow-500 mb-2">Silakan Scan QRIS untuk Membayar</p>
+              <p className="text-sm text-gray-400 mb-1">Scan menggunakan kamera HP Anda untuk masuk ke halaman pembayaran simulasi.</p>
+              <p className="text-sm text-gray-400">Sisa Waktu Bayar: <strong className="text-red-500 text-base ml-1">{timeLeft}</strong></p>
               
-              <form onSubmit={handleUpload} className="mt-5 flex flex-col sm:flex-row gap-3">
-                <input type="file" name="foto" accept="image/*" required className="text-sm text-gray-300 border border-[#374151] bg-[#111827] rounded-lg p-2 flex-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 cursor-pointer" />
-                <button disabled={isUploading} type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50">
-                  {isUploading ? "Upload..." : "Kirim Bukti"}
+              <div className="mt-5 flex flex-col gap-3">
+                <a 
+                  href={payUrl} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="bg-[#10B981] hover:bg-[#059669] text-white px-5 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-500/20 text-center block"
+                >
+                  Buka Halaman Simulasi
+                </a>
+                <button 
+                  onClick={() => batalkanReservasiAction(data.r.id)} 
+                  className="text-xs text-red-400 hover:text-red-300 hover:underline font-bold transition-colors py-2"
+                >
+                  Batalkan Booking
                 </button>
-              </form>
-              
-              <button 
-                onClick={() => batalkanReservasiAction(data.r.id)} 
-                className="mt-5 text-xs text-red-400 hover:text-red-300 hover:underline font-bold transition-colors inline-block"
-              >
-                Batalkan Booking
-              </button>
+              </div>
             </div>
           </div>
         )}
