@@ -115,8 +115,8 @@ export async function createReservasiAction(lockId: string, lapanganId: string, 
   if (!lap) return { error: "Lapangan tidak ditemukan." };
 
   const totalHarga = lap.hargaPerJam; // Asumsi booking 1 jam
-  const kodeUnik = Math.floor(Math.random() * 900) + 100; // 100-999
-  const jumlahBayar = Number(totalHarga) + kodeUnik;
+  const kodeUnik = 0;
+  const jumlahBayar = Number(totalHarga);
 
   const batasWaktuBayar = new Date();
   batasWaktuBayar.setHours(batasWaktuBayar.getHours() + 1); // 1 jam batas bayar

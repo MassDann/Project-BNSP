@@ -24,7 +24,7 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
       showToast("Pembayaran Berhasil Dikonfirmasi!");
       setTimeout(() => {
         router.refresh();
-      }, 1500);
+      }, 500);
     });
 
     return () => {
