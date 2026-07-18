@@ -43,9 +43,18 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const action = url.searchParams.get("action");
+
+    // Jika belum ada action konfirmasi, tampilkan halaman minta konfirmasi
+    if (action !== "confirm" && t.statusVerifikasi === "menunggu") {
+      return new NextResponse(renderConfirmationHTML(r, t, l), {
+        headers: { "Content-Type": "text/html" },
+      });
+    }
+
     let isJustPaid = false;
 
-    // Jika masih menunggu pembayaran, eksekusi pembayaran
+    // Jika sudah dikonfirmasi dan status menunggu, proses pelunasan
     if (t.statusVerifikasi === "menunggu" && r.status === "pending_bayar") {
       await db.update(transaksi)
         .set({
@@ -163,6 +172,43 @@ function renderSuccessHTML(r: any, t: any, l: any, isJustPaid: boolean) {
             ? '<p class="text-sm text-gray-500 mb-2">Pembayaran kamu sedang dikonfirmasi secara otomatis ke layar laptop/kasir.</p>' 
             : '<p class="text-sm text-gray-500 mb-2">Pesanan ini sudah lunas sebelumnya.</p>'}
           <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-4">Silakan tutup tab browser ini</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function renderConfirmationHTML(r: any, t: any, l: any) {
+  return `
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Konfirmasi Pembayaran</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 font-sans">
+      <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+        
+        <div class="text-center mb-6 pt-2">
+          <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          </div>
+          <h1 class="text-2xl font-black text-gray-800 mb-1">Simulasi QRIS</h1>
+          <p class="text-sm font-semibold text-gray-500">Total Tagihan: Rp ${Number(t.jumlahBayar).toLocaleString("id-ID")}</p>
+        </div>
+
+        <div class="border-t border-dashed border-gray-300 py-4 mb-6">
+          <p class="text-center text-sm text-gray-600">Tekan tombol di bawah ini untuk mensimulasikan persetujuan pembayaran dari aplikasi M-Banking/E-Wallet kamu.</p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <a href="/api/payments/checkout?bookingId=${t.id}&action=confirm" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl text-center shadow-lg transition-all">
+            Bayar Sekarang
+          </a>
         </div>
       </div>
     </body>
