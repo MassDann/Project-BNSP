@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 
 export async function verifikasiPembayaranAction(transaksiId: string, status: "disetujui" | "ditolak", reservasiId: string) {
   const admin = await requireAdmin();
+  if (!admin || !admin.id) throw new Error("Unauthorized");
   
   await db.update(transaksi)
     .set({ 

@@ -10,6 +10,7 @@ import crypto from "crypto";
 
 export async function lockSlotAction(lapanganId: string, tanggal: string, jamMulai: string, jamSelesai: string) {
   const user = await requireAuth();
+  if (!user || !user.id) throw new Error("Unauthorized");
 
   // Hapus validasi block admin, izinkan admin untuk me-lock slot.
 
@@ -107,6 +108,7 @@ export async function lockSlotAction(lapanganId: string, tanggal: string, jamMul
 
 export async function createReservasiAction(lockId: string, lapanganId: string, tanggal: string, jamMulai: string, jamSelesai: string) {
   const user = await requireAuth();
+  if (!user || !user.id) throw new Error("Unauthorized");
 
   // Dapatkan detail lapangan untuk harganya
   const [lap] = await db.select().from(lapangan).where(eq(lapangan.id, lapanganId));
@@ -160,6 +162,7 @@ export async function createOfflineReservasiAction(
   metodePembayaran: string
 ) {
   const user = await requireAuth();
+  if (!user || !user.id) throw new Error("Unauthorized");
   
   if ((user as any).role !== "admin" && (user as any).role !== "superadmin") {
     return { error: "Akses ditolak. Hanya admin yang bisa booking offline." };

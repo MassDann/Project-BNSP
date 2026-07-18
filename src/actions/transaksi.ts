@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 export async function uploadBuktiAction(formData: FormData) {
   try {
     const user = await requireAuth();
+    if (!user || !user.id) throw new Error("Unauthorized");
     
     const transaksiId = formData.get("transaksiId") as string;
     const reservasiId = formData.get("reservasiId") as string;
@@ -46,6 +47,7 @@ export async function uploadBuktiAction(formData: FormData) {
 
 export async function batalkanReservasiAction(reservasiId: string) {
   const user = await requireAuth();
+  if (!user || !user.id) throw new Error("Unauthorized");
   
   const [res] = await db.update(reservasi)
     .set({ status: "dibatalkan" })

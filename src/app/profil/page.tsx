@@ -7,6 +7,7 @@ import ProfilClient from "./ProfilClient";
 
 export default async function ProfilPage() {
   const user = await requireAuth();
+  if (!user || !user.id) throw new Error("Unauthorized");
 
   const data = await db.select({
     r: reservasi,
