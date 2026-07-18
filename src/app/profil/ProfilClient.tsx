@@ -32,7 +32,7 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
     };
   }, [data.t, router]);
 
-  const payUrl = typeof window !== "undefined" && data.t ? `${window.location.origin}/pay/${data.t.id}` : "";
+  const payUrl = typeof window !== "undefined" && data.t ? `${window.location.origin}/api/payments/checkout?bookingId=${data.t.id}` : "";
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
