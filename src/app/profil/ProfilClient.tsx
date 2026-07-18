@@ -17,6 +17,7 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
     if (!data.t) return;
     const channelName = `transaksi-${data.t.id}`;
     const pusherClient = getPusherClient();
+    if (!pusherClient) return;
     const channel = pusherClient.subscribe(channelName);
     
     channel.bind("payment-success", () => {

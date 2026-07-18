@@ -24,6 +24,7 @@ export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, 
   useEffect(() => {
     // Subscribe ke Pusher untuk realtime update
     const pusher = getPusherClient();
+    if (!pusher) return;
     const channel = pusher.subscribe(`lapangan-${lapangan.id}`);
 
     channel.bind("slot-locked", (data: any) => {
