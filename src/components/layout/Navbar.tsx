@@ -1,4 +1,5 @@
 import { auth, signOut } from "@/lib/auth";
+import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 
@@ -13,10 +14,15 @@ export default async function Navbar() {
   return (
     <nav className="bg-[#0B1120] text-white px-8 py-4 flex justify-between items-center sticky top-0 z-50 border-b border-[#1F2937]">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-[#2563EB] rounded-lg flex items-center justify-center shadow-lg">
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <div className="relative w-10 h-10 overflow-hidden rounded-md shadow-lg bg-black border border-[#1F2937]">
+          <Image 
+            src="/logo.png" 
+            alt="Logo SM Sport Center" 
+            fill
+            className="object-contain"
+          />
         </div>
-        <h1 className="text-xl font-bold tracking-wide">SM SPORT CENTER</h1>
+        <h1 className="text-xl font-bold tracking-wide hidden sm:block">SM SPORT CENTER</h1>
       </div>
       
       {/* Menu Desktop */}
