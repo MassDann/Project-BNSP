@@ -123,21 +123,21 @@ export async function createReservasiAction(lockId: string, lapanganId: string, 
     totalHarga: totalHarga.toString(),
   }).returning();
 
-  await db.insert(transaksi).values({
+  const [newTrans] = await db.insert(transaksi).values({
     reservasiId: newRes.id,
     kodeUnik,
     jumlahBayar: jumlahBayar.toString(),
     metodePembayaran: "qris",
     statusVerifikasi: "menunggu",
     batasWaktuBayar,
-  });
+  }).returning();
 
   await db.delete(slotLock).where(eq(slotLock.id, lockId));
 
   revalidatePath(`/reservasi/${lapanganId}`);
   revalidatePath("/profil");
 
-  return { success: true, reservasiId: newRes.id };
+  return { success: true, reservasiId: newRes.id, transaksiId: newTrans.id };
 }
 
 export async function createOfflineReservasiAction(
