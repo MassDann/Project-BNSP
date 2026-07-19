@@ -78,21 +78,78 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
 
   const handleDownloadInvoice = () => {
     const doc = new jsPDF();
+    
+    // Header Background
+    doc.setFillColor(37, 99, 235); // bg-blue-600
+    doc.rect(0, 0, 210, 40, "F");
+    
+    // Title
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("SM Sport Center", 20, 20);
+    doc.setFontSize(26);
+    doc.text("SM SPORT CENTER", 20, 22);
     
-    doc.setFontSize(14);
-    doc.text("Bukti Reservasi (Terkonfirmasi)", 20, 30);
-    
+    // Subtitle
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
-    doc.text(`ID Booking: ${data.r.id}`, 20, 45);
-    doc.text(`Nama Pemesan: ${userNama}`, 20, 52);
-    doc.text(`Lapangan: ${data.l.nama} (${data.l.jenis})`, 20, 59);
-    doc.text(`Tanggal: ${data.r.tanggal}`, 20, 66);
-    doc.text(`Waktu: ${data.r.jamMulai} - ${data.r.jamSelesai}`, 20, 73);
-    doc.text(`Total Bayar: Rp ${Number(data.t.jumlahBayar).toLocaleString("id-ID")}`, 20, 80);
+    doc.text("BUKTI RESERVASI LAPANGAN", 20, 30);
+    
+    // Reset text color for body
+    doc.setTextColor(50, 50, 50);
+    
+    // Content box
+    doc.setDrawColor(220, 220, 220);
+    doc.setFillColor(250, 250, 250);
+    doc.roundedRect(20, 50, 170, 95, 3, 3, "FD");
+    
+    // Status Lunas Stamp
+    doc.setTextColor(16, 185, 129); // text-green-500
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("LUNAS", 155, 75);
+    
+    doc.setTextColor(30, 41, 59);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Detail Pemesanan", 25, 60);
+    doc.setDrawColor(220, 220, 220);
+    doc.line(25, 64, 185, 64);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const startY = 74;
+    const lh = 8; // line height
+    
+    doc.text("ID Booking", 25, startY);
+    doc.text(`: ${data.r.id.split("-")[0].toUpperCase()}`, 65, startY);
+    
+    doc.text("Nama Pemesan", 25, startY + lh);
+    doc.text(`: ${userNama}`, 65, startY + lh);
+    
+    doc.text("Lapangan", 25, startY + lh * 2);
+    doc.text(`: ${data.l.nama} (${data.l.jenis.toUpperCase()})`, 65, startY + lh * 2);
+    
+    doc.text("Tanggal Main", 25, startY + lh * 3);
+    doc.text(`: ${data.r.tanggal}`, 65, startY + lh * 3);
+    
+    doc.text("Waktu Main", 25, startY + lh * 4);
+    doc.text(`: ${data.r.jamMulai.slice(0, 5)} - ${data.r.jamSelesai.slice(0, 5)}`, 65, startY + lh * 4);
+    
+    // Total Bayar highlight box
+    doc.setFillColor(239, 246, 255); // bg-blue-50
+    doc.rect(25, startY + lh * 5.5, 160, 16, "F");
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("TOTAL BAYAR", 30, startY + lh * 5.5 + 11);
+    doc.setTextColor(37, 99, 235); // text-blue-600
+    doc.text(`Rp ${Number(data.t.jumlahBayar).toLocaleString("id-ID")}`, 140, startY + lh * 5.5 + 11);
+    
+    // Footer note
+    doc.setFontSize(9);
+    doc.setTextColor(150, 150, 150);
+    doc.setFont("helvetica", "italic");
+    doc.text("Harap tunjukkan bukti reservasi ini kepada petugas lapangan.", 105, 160, { align: "center" });
     
     doc.save(`Invoice_${data.l.nama}_${data.r.tanggal}.pdf`);
   };
@@ -137,22 +194,14 @@ export default function ProfilClient({ data, userNama }: { data: any, userNama: 
 
             <div className="flex-1 w-full text-center md:text-left">
               <p className="font-bold text-yellow-500 mb-2">Silakan Scan QRIS untuk Membayar</p>
-              <p className="text-sm text-gray-400 mb-1">Scan menggunakan kamera HP Anda untuk masuk ke halaman pembayaran simulasi.</p>
+              <p className="text-sm text-gray-400 mb-1">Scan menggunakan kamera HP Anda untuk menyelesaikan pembayaran.</p>
               <p className="text-sm text-gray-400">Sisa Waktu Bayar: <strong className="text-red-500 text-base ml-1">{timeLeft}</strong></p>
-              
-              <div className="mt-5 flex flex-col gap-3">
-                <a 
-                  href={payUrl} 
-                  target="_blank" 
-                  rel="noreferrer" 
-                  className="bg-[#10B981] hover:bg-[#059669] text-white px-5 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-500/20 text-center block"
-                >
-                  Buka Halaman Simulasi
-                </a>
+              <div className="mt-5">
                 <button 
                   onClick={() => batalkanReservasiAction(data.r.id)} 
-                  className="text-xs text-red-400 hover:text-red-300 hover:underline font-bold transition-colors py-2"
+                  className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-5 py-3 rounded-xl text-sm font-bold transition-all"
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                   Batalkan Booking
                 </button>
               </div>

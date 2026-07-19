@@ -5,6 +5,8 @@ import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import ProfilClient from "./ProfilClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilPage() {
   const user = await requireAuth();
   if (!user || !user.id) throw new Error("Unauthorized");
@@ -33,19 +35,19 @@ export default async function ProfilPage() {
         </Link>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6 mt-6">
-        <div className="bg-[#111827] rounded-2xl p-8 shadow-xl border border-[#1F2937] mb-10 flex gap-10">
-          <div>
-            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Booking</h2>
-            <p className="text-4xl font-black text-white">{countTotal}</p>
+      <main className="max-w-5xl mx-auto p-4 md:p-6 mt-2 md:mt-6">
+        <div className="bg-[#111827] rounded-2xl p-6 shadow-xl border border-[#1F2937] mb-8 grid grid-cols-3 gap-4 text-center divide-x divide-[#1F2937]">
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 whitespace-nowrap">Total Booking</h2>
+            <p className="text-3xl md:text-4xl font-black text-white">{countTotal}</p>
           </div>
-          <div>
-            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Berhasil</h2>
-            <p className="text-4xl font-black text-green-500">{countTerkonfirmasi}</p>
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 whitespace-nowrap">Berhasil</h2>
+            <p className="text-3xl md:text-4xl font-black text-green-500">{countTerkonfirmasi}</p>
           </div>
-          <div>
-            <h2 className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Batal/Hangus</h2>
-            <p className="text-4xl font-black text-red-500">{countDibatalkan}</p>
+          <div className="flex flex-col items-center justify-center">
+            <h2 className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 whitespace-nowrap">Batal/Hangus</h2>
+            <p className="text-3xl md:text-4xl font-black text-red-500">{countDibatalkan}</p>
           </div>
         </div>
 

@@ -16,12 +16,12 @@ export default async function VerifikasiPage() {
   .orderBy(desc(transaksi.batasWaktuBayar));
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-white mb-2">Riwayat Transaksi Masuk</h1>
-      <p className="text-gray-400 mb-8">Data pembayaran dikonfirmasi secara otomatis dari sistem (Simulasi QRIS).</p>
+    <div className="p-4 md:p-8">
+      <h1 className="text-xl md:text-2xl font-bold text-white mb-2">Riwayat Transaksi Masuk</h1>
+      <p className="text-sm md:text-base text-gray-400 mb-6 md:mb-8">Data pembayaran dikonfirmasi secara otomatis dari sistem (Simulasi QRIS).</p>
 
-      <div className="bg-[#111827] rounded-lg shadow-sm border border-[#1F2937] overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-[#111827] rounded-lg shadow-sm border border-[#1F2937] overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[600px]">
           <thead>
             <tr className="bg-[#1F2937] border-b border-[#374151]">
               <th className="p-4 font-medium text-sm text-gray-300">Pelanggan</th>
@@ -40,7 +40,9 @@ export default async function VerifikasiPage() {
               <tr key={data.t.id} className="border-b border-[#1F2937] hover:bg-[#1F2937]/50">
                 <td className="p-4">
                   <div className="font-medium text-gray-200">{data.p.nama}</div>
-                  <div className="text-xs text-gray-500">{data.p.email}</div>
+                  <div className="text-xs text-gray-500">
+                    {data.p.email.startsWith("offline_") ? `Offline / Walk-in (${data.p.noTelepon})` : data.p.email}
+                  </div>
                 </td>
                 <td className="p-4">
                   <div className="text-sm text-gray-300">{data.l.nama}</div>

@@ -8,13 +8,13 @@ export default async function AdminLapanganPage() {
   const lapangans = await db.select().from(lapangan);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-white mb-6">Kelola Lapangan</h1>
+    <div className="p-4 md:p-8">
+      <h1 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Kelola Lapangan</h1>
 
-      <div className="bg-[#111827] p-6 rounded-lg shadow-sm border border-[#1F2937] mb-8 max-w-2xl">
-        <h2 className="text-lg font-bold text-gray-100 mb-4">Tambah Lapangan Baru</h2>
+      <div className="bg-[#111827] p-4 md:p-6 rounded-lg shadow-sm border border-[#1F2937] mb-6 md:mb-8 max-w-2xl">
+        <h2 className="text-base md:text-lg font-bold text-gray-100 mb-4">Tambah Lapangan Baru</h2>
         <form action={addLapanganAction} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Nama Lapangan</label>
               <input name="nama" type="text" required className="w-full bg-[#1F2937] border border-[#374151] text-gray-100 rounded px-3 py-2 focus:border-blue-500 focus:outline-none" placeholder="Cth: Futsal 3" />
@@ -33,14 +33,14 @@ export default async function AdminLapanganPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Foto Lapangan</label>
-            <input name="foto" type="file" accept="image/*" className="w-full bg-[#1F2937] border border-[#374151] text-gray-100 rounded px-3 py-2 focus:border-blue-500 focus:outline-none" />
+            <input name="foto" type="file" accept="image/*" className="w-full bg-[#1F2937] border border-[#374151] text-gray-100 rounded px-3 py-2 focus:border-blue-500 focus:outline-none text-sm" />
           </div>
-          <button type="submit" className="bg-[#2563EB] hover:bg-blue-600 text-white px-4 py-2 rounded transition font-medium shadow-sm">Simpan Lapangan</button>
+          <button type="submit" className="w-full md:w-auto bg-[#2563EB] hover:bg-blue-600 text-white px-4 py-2 rounded transition font-medium shadow-sm">Simpan Lapangan</button>
         </form>
       </div>
 
-      <div className="bg-[#111827] rounded-lg shadow-sm border border-[#1F2937] overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-[#111827] rounded-lg shadow-sm border border-[#1F2937] overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[600px]">
           <thead>
             <tr className="bg-[#1F2937] border-b border-[#374151]">
               <th className="p-4 font-medium text-sm text-gray-300">Nama</th>

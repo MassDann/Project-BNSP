@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="id">
       <body className={`${inter.variable} ${manrope.variable} font-sans antialiased text-gray-100 bg-[#0B1120] min-h-screen flex flex-col`}>
         <Navbar />
-        <main className="flex-1">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
         <Footer />

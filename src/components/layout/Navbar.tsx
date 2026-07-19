@@ -1,9 +1,15 @@
 import { auth, signOut } from "@/lib/auth";
 import Link from "next/link";
+import MobileMenu from "./MobileMenu";
 
 export default async function Navbar() {
   const session = await auth();
   
+  const signOutAction = async () => {
+    "use server";
+    await signOut();
+  };
+
   return (
     <nav className="bg-[#0B1120] text-white px-8 py-4 flex justify-between items-center sticky top-0 z-50 border-b border-[#1F2937]">
       <div className="flex items-center gap-3">
@@ -34,10 +40,7 @@ export default async function Navbar() {
               {session.user?.name}
             </span>
             <div className="w-px h-5 bg-gray-700 mx-1"></div>
-            <form action={async () => {
-              "use server";
-              await signOut();
-            }}>
+            <form action={signOutAction}>
               <button type="submit" className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 Keluar
@@ -51,47 +54,8 @@ export default async function Navbar() {
         )}
       </div>
 
-      {/* Menu Mobile (Hamburger) */}
-      <div className="md:hidden flex items-center">
-        <label htmlFor="mobile-menu-toggle" className="cursor-pointer text-gray-300 hover:text-white p-2">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </label>
-        <input type="checkbox" id="mobile-menu-toggle" className="peer hidden" />
-        
-        {/* Dropdown Menu Mobile */}
-        <div className="absolute top-[73px] left-0 w-full bg-[#0B1120] border-b border-[#1F2937] flex-col gap-6 shadow-xl z-50 p-6 hidden peer-checked:flex">
-          <Link href="/" className="text-gray-300 hover:text-white font-semibold text-lg">Beranda</Link>
-          <Link href="/reservasi" className="text-gray-300 hover:text-white font-semibold text-lg">Reservasi Lapangan</Link>
-          <Link href="/profil" className="text-gray-300 hover:text-white font-semibold text-lg">Riwayat Booking</Link>
-          
-          {((session?.user as any)?.role === "superadmin" || (session?.user as any)?.role === "admin") && (
-            <Link href="/admin" className="text-yellow-500 font-semibold text-lg">
-              Admin Panel
-            </Link>
-          )}
-          
-          <div className="w-full h-px bg-[#1F2937] my-2"></div>
-          
-          {session ? (
-            <div className="flex flex-col gap-4">
-              <span className="text-sm font-medium text-gray-400">Halo, {session.user?.name}</span>
-              <form action={async () => {
-                "use server";
-                await signOut();
-              }}>
-                <button type="submit" className="text-left text-red-400 hover:text-red-300 font-bold flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                  Keluar
-                </button>
-              </form>
-            </div>
-          ) : (
-            <Link href="/login" className="bg-[#2563EB] text-white text-center py-3 rounded-xl font-bold w-full">
-              Masuk / Daftar
-            </Link>
-          )}
-        </div>
-      </div>
+      {/* Menu Mobile */}
+      <MobileMenu session={session} signOutAction={signOutAction} />
     </nav>
   );
 }

@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     if (t.statusVerifikasi === "menunggu" && r.status === "pending_bayar") {
       await db.update(transaksi)
         .set({
-          statusVerifikasi: "terkonfirmasi",
+          statusVerifikasi: "disetujui",
           diverifikasiPada: new Date(),
         })
         .where(eq(transaksi.id, t.id));
