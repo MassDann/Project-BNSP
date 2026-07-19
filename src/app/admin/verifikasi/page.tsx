@@ -53,6 +53,7 @@ export default async function VerifikasiPage() {
                   <span className={`px-2 py-1 text-xs font-bold rounded ${
                     data.t.statusVerifikasi === 'disetujui' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
                     data.t.statusVerifikasi === 'ditolak' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
+                    data.t.statusVerifikasi === 'dibatalkan' || data.t.statusVerifikasi === 'kedaluwarsa' ? 'bg-gray-500/10 text-gray-400 border border-gray-600/30' :
                     'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
                   }`}>
                     {data.t.statusVerifikasi}

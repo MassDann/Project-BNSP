@@ -37,6 +37,10 @@ export async function GET(request: Request) {
         await db.update(reservasi)
           .set({ status: "kedaluwarsa" })
           .where(eq(reservasi.id, tx.reservasiId));
+
+        await db.update(transaksi)
+          .set({ statusVerifikasi: "kedaluwarsa" })
+          .where(eq(transaksi.id, tx.id));
       }
     }
     

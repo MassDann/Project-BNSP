@@ -41,9 +41,14 @@ export async function batalkanReservasiAction(reservasiId: string) {
   const [res] = await db.update(reservasi)
     .set({ status: "dibatalkan" })
     .where(and(eq(reservasi.id, reservasiId), eq(reservasi.pelangganId, user.id), eq(reservasi.status, "pending_bayar")))
-    .returning({ lapanganId: reservasi.lapanganId });
+    .returning({ id: reservasi.id, lapanganId: reservasi.lapanganId });
     
+  if (res?.id) {
+    await db.update(transaksi).set({ statusVerifikasi: "dibatalkan" }).where(eq(transaksi.reservasiId, res.id));
+  }
+
   revalidatePath("/profil");
+  revalidatePath("/admin");
   if (res?.lapanganId) {
     revalidatePath(`/reservasi/${res.lapanganId}`);
   }
