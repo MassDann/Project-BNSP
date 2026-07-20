@@ -12,7 +12,7 @@ export default async function VerifikasiPage() {
   })
   .from(transaksi)
   .innerJoin(reservasi, eq(transaksi.reservasiId, reservasi.id))
-  .innerJoin(pelanggan, eq(reservasi.pelangganId, pelanggan.id))
+  .leftJoin(pelanggan, eq(reservasi.pelangganId, pelanggan.id))
   .innerJoin(lapangan, eq(reservasi.lapanganId, lapangan.id))
   .orderBy(desc(transaksi.batasWaktuBayar));
 
@@ -40,9 +40,13 @@ export default async function VerifikasiPage() {
             {daftarTransaksi.map(data => (
               <tr key={data.t.id} className="border-b border-[#1F2937] hover:bg-[#1F2937]/50">
                 <td className="p-4">
-                  <div className="font-medium text-gray-200">{data.p.nama}</div>
+                  <div className="font-medium text-gray-200">
+                    {data.p ? data.p.nama : data.r.namaOffline || "Walk-in"}
+                  </div>
                   <div className="text-xs text-gray-500">
-                    {data.p.email.startsWith("offline_") ? `Offline / Walk-in (${data.p.noTelepon})` : data.p.email}
+                    {data.p 
+                      ? (data.p.email.startsWith("offline_") ? `Offline / Walk-in (${data.p.noTelepon})` : data.p.email) 
+                      : `Offline / Walk-in (${data.r.noHpOffline || "-"})`}
                   </div>
                 </td>
                 <td className="p-4">

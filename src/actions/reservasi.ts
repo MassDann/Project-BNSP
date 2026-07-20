@@ -167,15 +167,6 @@ export async function createOfflineReservasiAction(
   const durasi = parseInt(jamSelesai.split(":")[0]) - parseInt(jamMulai.split(":")[0]);
   const totalHarga = Number(lap.hargaPerJam) * durasi;
 
-  const dummyEmail = `offline_${Date.now()}_${crypto.randomBytes(4).toString('hex')}@smsport.com`;
-
-  const [newPelanggan] = await db.insert(pelanggan).values({
-    nama: namaPelanggan,
-    email: dummyEmail,
-    noTelepon: noHpPelanggan,
-    passwordHash: crypto.randomBytes(16).toString('hex')
-  }).returning();
-
   let statusRes = "terkonfirmasi";
   let statusTrans = "disetujui";
   let diverifikasiOleh = user.id;
@@ -187,7 +178,9 @@ export async function createOfflineReservasiAction(
   }
 
   const [newRes] = await db.insert(reservasi).values({
-    pelangganId: newPelanggan.id,
+    pelangganId: null as any, // Null untuk offline
+    namaOffline: namaPelanggan,
+    noHpOffline: noHpPelanggan,
     lapanganId,
     tanggal,
     jamMulai,

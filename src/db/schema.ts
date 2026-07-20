@@ -29,7 +29,9 @@ export const lapangan = pgTable('lapangan', {
 
 export const reservasi = pgTable('reservasi', {
   id: uuid('id').primaryKey().defaultRandom(),
-  pelangganId: uuid('pelanggan_id').references(() => pelanggan.id).notNull(),
+  pelangganId: uuid('pelanggan_id').references(() => pelanggan.id), // Boleh null untuk offline
+  namaOffline: text('nama_offline'),
+  noHpOffline: text('no_hp_offline'),
   lapanganId: uuid('lapangan_id').references(() => lapangan.id).notNull(),
   tanggal: date('tanggal').notNull(),
   jamMulai: time('jam_mulai').notNull(),

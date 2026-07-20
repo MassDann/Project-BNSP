@@ -11,6 +11,8 @@ export default async function AdminLaporanPage() {
     statusVerifikasi: transaksi.statusVerifikasi,
     pelangganNama: pelanggan.nama,
     pelangganEmail: pelanggan.email,
+    namaOffline: reservasi.namaOffline,
+    noHpOffline: reservasi.noHpOffline,
     lapanganNama: lapangan.nama,
     tanggal: reservasi.tanggal,
     jamMulai: reservasi.jamMulai,
@@ -18,13 +20,15 @@ export default async function AdminLaporanPage() {
   })
   .from(transaksi)
   .innerJoin(reservasi, eq(transaksi.reservasiId, reservasi.id))
-  .innerJoin(pelanggan, eq(reservasi.pelangganId, pelanggan.id))
+  .leftJoin(pelanggan, eq(reservasi.pelangganId, pelanggan.id))
   .innerJoin(lapangan, eq(reservasi.lapanganId, lapangan.id))
   .orderBy(desc(transaksi.batasWaktuBayar));
 
   // Default fallback if diverifikasiPada is null, use batasWaktuBayar minus 1 hour as proxy for creation
   const normalizedData = data.map(d => ({
     ...d,
+    pelangganNama: d.pelangganNama || d.namaOffline || "Walk-in",
+    pelangganEmail: d.pelangganEmail || `Offline (${d.noHpOffline || "-"})`,
     createdAt: d.createdAt || new Date() 
   }));
 
