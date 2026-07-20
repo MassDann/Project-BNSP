@@ -221,7 +221,10 @@ export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, 
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-1">No HP</label>
-                  <input type="tel" pattern="[0-9]*" value={noHpPelanggan} onChange={(e) => setNoHpPelanggan(e.target.value.replace(/[^0-9]/g, ''))} className="w-full bg-[#1F2937] border border-[#374151] text-white px-3 py-2 rounded-lg outline-none focus:border-[#3B82F6]" placeholder="Contoh: 08123456789" />
+                  <input type="tel" pattern="[0-9]*" value={noHpPelanggan} onInput={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, '');
+                    setNoHpPelanggan(e.currentTarget.value);
+                  }} className="w-full bg-[#1F2937] border border-[#374151] text-white px-3 py-2 rounded-lg outline-none focus:border-[#3B82F6]" placeholder="Contoh: 08123456789" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-1">Metode Pembayaran</label>
