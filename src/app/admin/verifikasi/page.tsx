@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { transaksi, reservasi, pelanggan, lapangan } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
+import CountdownTimer from "@/components/ui/CountdownTimer";
 
 export default async function VerifikasiPage() {
   const daftarTransaksi = await db.select({
@@ -50,14 +51,25 @@ export default async function VerifikasiPage() {
                 </td>
                 <td className="p-4 text-sm font-bold text-gray-300">Rp {Number(data.t.jumlahBayar).toLocaleString("id-ID")}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 text-xs font-bold rounded ${
-                    data.t.statusVerifikasi === 'disetujui' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
-                    data.t.statusVerifikasi === 'ditolak' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
-                    data.t.statusVerifikasi === 'dibatalkan' || data.t.statusVerifikasi === 'kedaluwarsa' ? 'bg-gray-500/10 text-gray-400 border border-gray-600/30' :
-                    'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20'
-                  }`}>
-                    {data.t.statusVerifikasi}
-                  </span>
+                  {data.t.statusVerifikasi === 'menunggu' ? (
+                    <div className="flex items-center gap-2">
+                      <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-xs font-bold rounded">
+                        menunggu
+                      </span>
+                      <CountdownTimer 
+                        expireAt={data.t.batasWaktuBayar} 
+                        className="text-xs text-gray-400 font-mono" 
+                      />
+                    </div>
+                  ) : (
+                    <span className={`px-2 py-1 text-xs font-bold rounded ${
+                      data.t.statusVerifikasi === 'disetujui' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
+                      data.t.statusVerifikasi === 'ditolak' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
+                      'bg-gray-500/10 text-gray-400 border border-gray-600/30'
+                    }`}>
+                      {data.t.statusVerifikasi}
+                    </span>
+                  )}
                 </td>
               </tr>
             ))}

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { lapangan, reservasi, slotLock } from "@/db/schema";
-import { eq, and, gte, or } from "drizzle-orm";
+import { eq, and, gte, or, inArray } from "drizzle-orm";
 import JadwalLapangan from "@/components/booking/JadwalLapangan";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
@@ -30,6 +30,28 @@ export default async function BookingPage(props: { params: Promise<{ id: string 
       )
     )
   );
+
+  // DYNAMIC CLEANUP: Hapus reservasi yang kedaluwarsa secara real-time
+  const pendingReservations = listReservasi.filter(r => r.status === "pending_bayar");
+  if (pendingReservations.length > 0) {
+    const { transaksi } = await import("@/db/schema");
+    const transactions = await db.select().from(transaksi).where(
+      inArray(transaksi.reservasiId, pendingReservations.map(r => r.id))
+    );
+    
+    const now = new Date();
+    for (const t of transactions) {
+      if (t.batasWaktuBayar < now && t.statusVerifikasi === "menunggu") {
+         // Update DB
+         await db.update(reservasi).set({ status: "kedaluwarsa" }).where(eq(reservasi.id, t.reservasiId));
+         await db.update(transaksi).set({ statusVerifikasi: "kedaluwarsa" }).where(eq(transaksi.id, t.id));
+         
+         // Hapus dari listReservasi agar UI menganggap slot kosong
+         const idx = listReservasi.findIndex(r => r.id === t.reservasiId);
+         if (idx > -1) listReservasi.splice(idx, 1);
+      }
+    }
+  }
 
   // Ambil slot_lock yang belum kedaluwarsa
   const listLock = await db.select().from(slotLock).where(

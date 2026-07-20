@@ -6,6 +6,8 @@ import { lockSlotAction, unlockSlotAction, createReservasiAction, createOfflineR
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { QRCodeCanvas } from "qrcode.react";
+import Pusher from "pusher-js";
+import CountdownTimer from "@/components/ui/CountdownTimer";
 
 export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, listLock, userId, userRole }: any) {
   const router = useRouter();
@@ -26,7 +28,7 @@ export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, 
   const [modalState, setModalState] = useState<{isOpen: boolean, jam: string, textJam: string, lockId?: string}>({isOpen: false, jam: "", textJam: ""});
   
   // State untuk Admin QRIS Popup
-  const [qrisPopup, setQrisPopup] = useState<{isOpen: boolean, url: string, transaksiId: string, reservasiId: string} | null>(null);
+  const [qrisPopup, setQrisPopup] = useState<{isOpen: boolean, url: string, transaksiId: string, reservasiId: string, expireAt: Date} | null>(null);
 
   useEffect(() => {
     const pusher = getPusherClient();
@@ -130,12 +132,15 @@ export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, 
       closeAndClearModal(false);
       if (isAdmin) {
         if (metodePembayaran === "qris" && res.transaksiId) {
-          const payUrl = `${window.location.origin}/api/payments/checkout?bookingId=${res.reservasiId}`;
+          const payUrl = `${window.location.origin}/api/payments/checkout?bookingId=${res.transaksiId}`;
+          const expireAt = new Date();
+          expireAt.setMinutes(expireAt.getMinutes() + 10);
           setQrisPopup({
             isOpen: true,
             url: payUrl,
             transaksiId: res.transaksiId,
-            reservasiId: res.reservasiId
+            reservasiId: res.reservasiId,
+            expireAt
           });
         } else {
           alert(`Booking Offline berhasil dikonfirmasi secara ${metodePembayaran}!`);
@@ -171,6 +176,15 @@ export default function JadwalLapangan({ lapangan, allLapangans, listReservasi, 
             <p className="text-gray-400 text-sm text-center mb-6">Minta pelanggan memindai QR code ini. Layar akan tertutup otomatis setelah sukses.</p>
             <div className="bg-white p-4 rounded-xl shadow-lg border-4 border-gray-100 mb-6 inline-block">
               <QRCodeCanvas value={qrisPopup.url} size={180} level="H" />
+            </div>
+            
+            <div className="mt-4 flex flex-col items-center">
+              <p className="text-sm text-gray-400 mb-1">Batas Waktu Pembayaran:</p>
+              <CountdownTimer 
+                expireAt={qrisPopup.expireAt} 
+                className="text-2xl font-bold text-yellow-500 font-mono tracking-wider" 
+                onExpire={() => setQrisPopup(null)}
+              />
             </div>
 
             <button 
