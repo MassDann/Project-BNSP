@@ -56,15 +56,15 @@ export default async function VerifikasiPage() {
                 <td className="p-4 text-sm font-bold text-gray-300">Rp {Number(data.t.jumlahBayar).toLocaleString("id-ID")}</td>
                 <td className="p-4">
                   {data.t.statusVerifikasi === 'menunggu' ? (
-                    <div className="flex items-center gap-2">
-                      <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-xs font-bold rounded">
-                        menunggu
-                      </span>
-                      <CountdownTimer 
-                        expireAt={data.t.batasWaktuBayar} 
-                        className="text-xs text-gray-400 font-mono" 
-                      />
-                    </div>
+                    <CountdownTimer 
+                      expireAt={data.t.batasWaktuBayar} 
+                      className="text-xs text-gray-400 font-mono" 
+                      prefixNode={
+                        <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-2 py-1 text-xs font-bold rounded">
+                          menunggu
+                        </span>
+                      }
+                    />
                   ) : (
                     <span className={`px-2 py-1 text-xs font-bold rounded ${
                       data.t.statusVerifikasi === 'disetujui' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 

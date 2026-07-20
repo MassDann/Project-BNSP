@@ -7,13 +7,15 @@ interface CountdownTimerProps {
   onExpire?: () => void;
   className?: string;
   expiredText?: string;
+  prefixNode?: React.ReactNode;
 }
 
 export default function CountdownTimer({ 
   expireAt, 
   onExpire, 
   className = "text-yellow-500 font-mono font-bold",
-  expiredText = "Kedaluwarsa"
+  expiredText = "Kedaluwarsa",
+  prefixNode
 }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [hasExpired, setHasExpired] = useState(false);
@@ -58,8 +60,11 @@ export default function CountdownTimer({
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
   return (
-    <span className={className}>
-      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-    </span>
+    <div className="flex items-center gap-2">
+      {prefixNode}
+      <span className={className}>
+        {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+      </span>
+    </div>
   );
 }
